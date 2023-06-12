@@ -54,7 +54,10 @@ export default function Star({ className, value, height, width, spacing }) {
 
   return (
     <>
-      <div className={["stars", className].join(" ")} style={{ height: height }}>
+      <div
+        className={["stars", className].join(" ")}
+        style={{ height: height }}
+      >
         {starPlaceholder}
         {star}
       </div>
