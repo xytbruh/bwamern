@@ -1,89 +1,48 @@
-import React, { useState } from "react";
-
+import React, { useState, useRef, useEffect } from "react";
 import propTypes from "prop-types";
+import { DateRange } from "react-date-range";
 
 import "./index.scss";
-export default function Number(props) {
-  const { value, placeholder, name, min, max, prefix, suffix } = props;
-  const { InputValue, setInputValue } = useState(`${prefix}${value}${suffix}`);
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
 
-  const onChange = (e) => {
-    let value = String(e.target.value);
-    if (prefix) value = value.replace(prefix);
-    if (suffix) value = value.replace(suffix);
+import formDate from "utils/formDate";
+import iconCalendar from "assets/icons/ic_calendar.svg";
 
-    const patternNumeric = new RegExp("[0-9]*");
-    const isNumeric = patternNumeric.test(value);
+import React from "react";
 
-    if (isNumeric && +value <= max && +value >= min) {
-      props.onChange({
-        target: {
-          name: name,
-          value: value,
-        },
-      });
-      setInputValue(`${prefix}${value}${suffix}`);
+export default function Date(props) {
+  const { value, placeholder, name } = props;
+  const [isShowed, setIshowed] = useState(false);
+
+  const datePickerChange = (value) => {
+    const target = {
+      value: value.selection,
+      name: name,
+    };
+    props.onChange(target);
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  });
+
+  const refDate = useRef(null);
+  const handleClickOutside = (event) => {
+    if (refDate.current && !refDate.current.contains(event.target)) {
+      setIshowed(false);
     }
   };
 
-  const minus = () => {
-    value =
-      min &&
-      onChange({
-        target: {
-          name: name,
-          value: value,
-        },
-      });
-  };
-  const plus = () => {
-    value =
-      max &&
-      onChange({
-        target: {
-          name: name,
-          value: value,
-        },
-      });
-  };
-
-  return (
-    <div className={["input-number mb-3", props.outerClassName].join("")}>
-      <div className="input-group">
-        <div className="input-group-prepend">
-          <div className="input-group-text minus" onClick={minus}>
-            -
-          </div>
-        </div>
-        <input
-          min={min}
-          max={max}
-          name={name}
-          pattern="[0-9]*"
-          className="form-control"
-          placeholder={placeholder ? placeholder : "0"}
-          value={String(InputValue)}
-          onChange={onChange}
-        />
-        <div className="input-group-append">
-          <div className="input-group-text plus" onClick={plus}>
-            +
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return <div></div>;
 }
 
-Number.defaultProps = {
-  min: 1,
-  max: 1,
-  prefix: "",
-  suffix: "",
-};
-
-Number.propTypes = {
-  value: propTypes.oneOfType([propTypes.number, propTypes.string]),
+Date.propTypes = {
+  value: propTypes.object,
   onChange: propTypes.func,
   placeholder: propTypes.string,
   outerClassName: propTypes.string,
